@@ -1,0 +1,17 @@
+p { font-family: Arial; }
+
+h1 { font-family: Arial; }
+
+.biru { color: blue; }
+span.biru { background: yellow; }
+
+#unik { color: green; }
+
+input [type="text"] { 
+    background: yellow; 
+}
+
+p a {background: yellow;}
+article>p {background: aqua;}
+h1+p {background: green;}
+h1~p {color: blue;}
