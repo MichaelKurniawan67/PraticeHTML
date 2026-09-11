@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Don't Take Spike's Bones</title>
+    <style>
+        body { font-family: Arial; text-align: center; background: #fafafa; }
+        h1 { color: #333; }
+        .info { font-size: 18px; margin: 10px; }
+        .board { display: grid; grid-template-columns: repeat(5, 60px); gap: 10px; justify-content: center; margin: 20px auto; width: 340px; }
+        .bone { font-size: 40px; cursor: pointer; user-select: none; }
+        .bone.taken { opacity: 0.2; cursor: not-allowed; }
+        .center { grid-column: 2/5; grid-row: 2/4; border: 2px dashed #aaa; display: flex; align-items: center; justify-content: center; }
+        .btn { padding: 10px 20px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+<h1>Don't Take Spike's Bones</h1>
+<div class="info">Turns: <span id="turn"1st Player></span></div>
+<div class="info">Times: <span id="timer">00:05</span></div>
+<p><i>Steal Spike's bones, but don't wake him up</i></p>
+
+<div class="board" id="board"></div>
+
+<script>
+let bones = 16; // total tulang
+let currentPlayer = "1st Player";    
+let gameOver = false;
+let time = 10;
+let timerInterval;
+
+// Buat papan 5x5, tengah 3x3 kosong
+function createBoard() {
+    const board = document.getElementById("board");
+    board.innerHTML = "";
+    let boneCount = 0;
+    for(let i=0; i<25; i++){
+        const cell = document.createElement("div");
+        if(i >= 6 && i <= 8 || i >= 11 && i <= 13 || i >= 14 && i <= 18) {
+            cell.className = "center";
+            if (i==12) cell.innerText = "💤 Spike";
+        } else {
+            boneCount++;
+            cell.className = "bone";
+            cell.innerText = "🦴"
+            cell.onclick = () => takeBone(cell);
+        }
+        board.appendChild(cell);
+    }
+}
+
+function takeBone(cell) {
+    if(gameOver || cell.classList.contains("taken")) return;
+    cell.classList.add("taken");
+    cell.innerText = "";
+    bones--;
+    checkWinner();
+    switchPlayer();
+    resetTimer();
+}
+
+function switchPlayer() {
+    currentPlayer = (currentPlayer === "1st Player") ? "2nd Player" : "1st Player";
+    document.getElementById("turn").innerText = currentPlayer;
+}
+
+function resetTimer() {
+    if(bones <= 0) {
+        gameOver = true;
+        clearInterval(timerInterval);
+        setTimeout(() => alert(currentPlayer + "mengambil tulang terakhir! SPIKE BANGUN!" + currentPlayer + "KALAH!"), 200);
+    }
+}
+
+function resetTimer() {
+    clearInterval(timerInterval);
+    time = 10;
+    updateTimer();
+    timerInterval = setInterval(() => {
+        time--;
+        updateTimer();
+        if(time <= 0){
+            clearInterval(timerInterval);
+            alert("Waktu habis! Giliran pindah");
+            switchPlayer();
+            resetTimer();
+        }    
+    }, 1000);
+}
+
+function updateTimer() {
+    document.getElementById("timer").innerText = "00:0" + time;
+}
+
+//Mulai
+createBoard();
+resetTimer();
+</script>
+
+</body>
+</html>

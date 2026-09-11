@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Don't Take Spike's Bones</title>
+    <link rel="stylesheet" href="donttake.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body>
+    <!-- PAGE 1 HOME -->
+    <div id="home" class="page active">
+        <div class="card">
+            <h1>Don't Take Spike's Bones</h1>
+            <h3 id="player-text"><u>1st Player</u></h3>
+            <input id="playerName" placeholder="New Player">
+            <br>
+            <button onclick="addPlayer()">Add Player</button>
+            <button onclick="startGame()">Play</button>
+            <div class="player-list"><h4>player-list</h4><ul id="list"></ul></div>
+        </div>
+    </div>
+
+    <script src="donttake.js"></script>
+</body>
+</html>

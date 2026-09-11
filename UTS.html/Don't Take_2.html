@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Don't Take Spike's Bones</title>
+    <style>
+        body { font-family: Arial; text-align: center; background: #f5f5f5; margin: 0; padding: 20px; }
+        .page { display: none; }
+        .active { display: block; }
+        h1 { color: #6f4e37; }
+        input, button { padding: 10px; margin: 5px; border-radius: 8px; border: 1px solid #ccc; }
+        button { background: #6f4e37; color: white; cursor: pointer; border: none; }
+        button:hover { background: #543a28; }
+        .board { display: grid; grid-template-columns: repeat(5, 60px); gap: 8px; justify-content: center; margin: 20px auto; }
+        .bone { font-size: 35px; cursor: pointer; }
+        .bone.taken { opacity: 0.1; pointer-events: none; }
+        .center { grid-column: 2/5; grid-row: 2/4; border: 2px dashed #aaa; }
+        .gameover { color: red; font-size: 22px; font-weight: bold; }
+        .player-list { width: 200px; margin: 10px auto; text-align: left; background: white; padding: 10px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+
+<!-- HALAMAN 1 : HOME -->
+<div id="home" class="page active">
+    <h1>Don't Take Spike's Bones</h1>
+    <h2>1st Player</h2>
+    <input type="text" id="playerName" placeholder="New Player">
+    <br>
+    <button onclick="addPlayer()">Add Player</button>
+    <button onclick="starGame()">Play</button>
+    <div class="player-list">
+        <h3>Player List</h3>
+        <ul id="list"></ul>
+    </div>
+</div>
+
+<!-- HALAMAN 2 : GAME -->
+<div id="game" class="page">
+    <h1>Don't Take Spike's Bones</h1>
+    <div>Turns: <span id="turn">1st Player</span></div>
+    <div>Times: <span id="timer">00:05</span></div>
+    <p><i>Steal Spike's Bones, but don't wake him up</i></p>
+    <div class="board" id="board"></div>
+</div>   
+
+<!-- HALAMAN 3 : GAME OVER -->
+ <div id="gameover" class="page">
+    <h1>Don't Take Spike's Bones</h1>
+    <div>Turns: <span id="loser">3rd Player</span></div>
+    <div>Times: 00:05</div>
+    <div class="board" id="board-end"></div>
+    <p class="gameover">Oh no! Yaou wake him up</p>
+    <button onclick="playAgain()">Play Again</button>
+    <button onclick="backToHome()">Back to Home</button>
+ </div>
+
+
+<script>
+let players = ["Bejo", "Midoen"];
+let currentPlayerIndex = 0;    
+let bones = 16; 
+let time = 5;
+let timerInterval;
+let gameOver = false;
+
+
+function showPage(id) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+}
+
+// HOME LOGIC
+function tampilkanPlayer() {
+    document.getElementById("list").innerHTML = players.map(p => `<li>${p}</li>`).join("");    )
+}
+function addplayer() {
+    const name = document.getElementById("playerName").value;
+    if(name) { players.push(name); document.getElementById("playerName").value =""; tampilkanPlayer(); }
+}
+function starGame() {
+    if(player.length < 2) return alert("Minimal 2 player");
+    showPage("game");
+    createBoard();
+    resetTimer(); 
+}
+
+// GAME LOGIC
+function createBoard() {
+    const board = document.getElementById("board");
+    board.innerHTML = "";
+    let count = 0;
+    for(let i=0; i<25; i++){
+        const cell = document.createElement("div");
+        if(i >= 6 && i <= 18 && i%5 >=1 && i%5 <=3) {
+            cell.className = "center";
+            if (i==12) cell.innerText = "💤";
+        } else {
+            cell.className = "bone";
+            cell.innerText = "🦴"
+            cell.onclick = () => takeBone(cell);
+            count++;
+        }
+        board.appendChild(cell);
+    }
+    document.getElementById("board-end").innerHTML = board.innerHTML; // copy ke gameover
+}
+
+function takeBone(cell) {
+    if(gameOver) return;
+    cell.classList.add("taken");
+    bones--;
+    if(bones <= 0) {
+       endGame(); 
+    } else {
+        currentPlayerIndex = (currentPlayerIndex + 1) % player.length;
+        document.getElementById("turn").innerText = players[currentPlayerIndex];
+        resetTimer();
+    }
+}
+
+function resetTimer() {
+    clearInterval(timerInterval);
+    time = 5;
+    updateTimer();
+    timerInterval = setInterval(() => {
+        time--;
+        updateTimer();
+        if(time <= 0) {
+            currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+            document.getElementById("turn").innerText = players[currentPlayerIndex];
+            resetTimer();
+        }    
+    }, 1000);
+}
+
+function updateTimer() {
+    document.getElementById("timer").innerText = "00:0" + time;
+}
+
+// GAMEOVER LOGIC
+function endGame() {
+    gameOver = True;
+    clearInterval(timerInterval);
+    document.getElementById("loser").innerText = players[currentPlayerIndex];
+    showPage('gameover');
+    // SFX: new Audio('gonggong.mp3').play();
+}
+
+function playAgain() {
+    bones = 16; gameOver = false; currentPlayerIndex = 0;
+    document.getElementById("turn").innerText = players[0];
+    showPage('game'); createBoard(); resetTimer();
+}
+
+function backToHome() {
+    bones = 16; gameOver = false; currentPlayerIndex = 0;
+    showPage('home');
+}
+
+tampilkanPlayer();
+</script>
+</body>
+</html>
